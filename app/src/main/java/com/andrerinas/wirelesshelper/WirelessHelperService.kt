@@ -90,10 +90,15 @@ class WirelessHelperService : Service(), BaseStrategy.StateListener {
 
     override fun onProxyDisconnected() {
         isConnected = false
-        Log.i(TAG, "Proxy disconnected. Returning to searching state.")
+        Log.i(TAG, "Proxy disconnected. Stopping service.")
+        stopSelf()
+    }
+
+    override fun onLaunchTimeout() {
+        Log.i(TAG, "Launch timeout. Resuming discovery.")
         updateNotification("Searching for Headunit...")
         
-        // Restart the strategy to resume searching immediately
+        // Restart the strategy to resume searching
         currentStrategy?.stop()
         startSelectedStrategy()
     }
