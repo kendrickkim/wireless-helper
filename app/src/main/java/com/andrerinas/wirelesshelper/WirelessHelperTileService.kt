@@ -74,6 +74,7 @@ class WirelessHelperTileService : TileService() {
     }
 
     companion object {
+        @JvmStatic
         fun triggerUpdate(context: android.content.Context) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 requestListeningState(context, ComponentName(context, WirelessHelperTileService::class.java))

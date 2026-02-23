@@ -9,12 +9,18 @@ import android.content.Context
 import android.content.Intent
 import android.net.wifi.WifiManager
 import android.os.Build
-import android.os.IBinder
 import android.os.PowerManager
 import android.util.Log
 import androidx.core.app.NotificationCompat
-import com.andrerinas.wirelesshelper.strategy.*
-import kotlinx.coroutines.*
+import com.andrerinas.wirelesshelper.strategy.BaseStrategy
+import com.andrerinas.wirelesshelper.strategy.ConnectionStrategy
+import com.andrerinas.wirelesshelper.strategy.StrategyHotspotPhone
+import com.andrerinas.wirelesshelper.strategy.StrategyHotspotTablet
+import com.andrerinas.wirelesshelper.strategy.StrategySharedNetwork
+import com.andrerinas.wirelesshelper.strategy.StrategyWifiDirect
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 
 class WirelessHelperService : Service(), BaseStrategy.StateListener {
 
@@ -82,23 +88,20 @@ class WirelessHelperService : Service(), BaseStrategy.StateListener {
     override fun onProxyConnected() {
         isConnected = true
         updateNotification(getString(R.string.notif_connected))
-        WirelessHelperWidget.triggerUpdate(this)
-        WirelessHelperTileService.triggerUpdate(this)
+        updateAllUIs()
     }
 
     override fun onProxyDisconnected() {
         isConnected = false
         Log.i(TAG, "Proxy disconnected. Stopping service.")
-        WirelessHelperWidget.triggerUpdate(this)
-        WirelessHelperTileService.triggerUpdate(this)
+        updateAllUIs()
         stopSelf()
     }
 
     override fun onLaunchTimeout() {
         Log.i(TAG, "Launch timeout. Resuming discovery.")
         updateNotification(getString(R.string.notif_searching))
-        WirelessHelperWidget.triggerUpdate(this)
-        WirelessHelperTileService.triggerUpdate(this)
+        updateAllUIs()
         
         // Restart the strategy to resume searching
         currentStrategy?.stop()
@@ -109,16 +112,14 @@ class WirelessHelperService : Service(), BaseStrategy.StateListener {
         when (intent?.action) {
             ACTION_STOP -> {
                 isRunning = false
-                WirelessHelperWidget.triggerUpdate(this)
-                WirelessHelperTileService.triggerUpdate(this)
+                updateAllUIs()
                 stopSelf()
             }
             ACTION_START -> {
                 isRunning = true
                 isConnected = false
                 startSelectedStrategy()
-                WirelessHelperWidget.triggerUpdate(this)
-                WirelessHelperTileService.triggerUpdate(this)
+                updateAllUIs()
             }
         }
         return START_STICKY
@@ -136,9 +137,15 @@ class WirelessHelperService : Service(), BaseStrategy.StateListener {
             if (wakeLock?.isHeld == true) wakeLock?.release()
         } catch (e: Exception) { }
         serviceJob.cancel()
-        WirelessHelperWidget.triggerUpdate(this)
-        WirelessHelperTileService.triggerUpdate(this)
+        updateAllUIs()
         super.onDestroy()
+    }
+
+    private fun updateAllUIs() {
+        WirelessHelperWidget.triggerUpdate(this)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            WirelessHelperTileService.triggerUpdate(this)
+        }
     }
 
     private fun updateNotification(content: String) {
