@@ -1,0 +1,66 @@
+<resources>
+    <string name="app_name">Wireless Helper</string>
+    <string name="start_service">تشغيل Android Auto</string>
+    <string name="stop_service">إيقاف البحث</string>
+
+    <string name="connection_mode_label">وضع الاتصال</string>
+    <string name="mode_nsd">واي فاي مشترك (NSD)</string>
+    <string name="mode_hotspot_phone">نقطة اتصال الهاتف (NSD + شبكة وهمية)</string>
+    <string name="mode_passive">نقطة اتصال الجهاز اللوحي (سلبي)</string>
+    <string name="mode_wifi_direct">Wi-Fi Direct (تجريبي)</string>
+
+    <string name="auto_start_label">التشغيل التلقائي للخدمة</string>
+    <string name="auto_start_no">لا (يدوي)</string>
+    <string name="auto_start_bt">عند اتصال البلوتوث</string>
+    <string name="auto_start_wifi">عند الاتصال بشبكة واي فاي محددة</string>
+
+    <string name="bt_device_label">جهاز البلوتوث</string>
+    <string name="wifi_ssid_label">شبكة واي فاي (SSID)</string>
+    <string name="wifi_connected_network">شبكة واي فاي المتصلة</string>
+    <string name="wifi_ssid_hint">أدخل SSID الواي فاي</string>
+    <string name="wifi_ssid_dialog_title">واي فاي للتشغيل التلقائي</string>
+    <string name="wifi_ssid_dialog_msg">ستبدأ الخدمة تلقائيا عند الاتصال بهذه الشبكة:</string>
+    <string name="wifi_ssid_save">حفظ</string>
+    <string name="wifi_ssid_permissions_needed">طلب الأذونات</string>
+
+    <string name="wifi_background_location_title">يلزم الموقع في الخلفية</string>
+    <string name="wifi_background_location_msg">لاكتشاف الواي فاي أثناء إغلاق التطبيق، يرجى ضبط إذن الموقع على \'السماح في جميع الأوقات\' في إعدادات Android.</string>
+    <string name="wifi_background_location_button">الإعدادات</string>
+
+    <string name="battery_opt_title">تم اكتشاف تحسين البطارية</string>
+    <string name="battery_opt_msg">للسماح بالتشغيل التلقائي عبر الواي فاي/البلوتوث، يرجى ضبط هذا التطبيق على \'غير مقيد\' في إعدادات البطارية.</string>
+
+    <string name="not_set">غير محدد</string>
+
+    <string name="logs_label">السجلات:</string>
+    <string name="category_info">معلومات</string>
+    <string name="settings_header">الإعدادات</string>
+    <string name="version">الإصدار</string>
+    <string name="about">حول &amp; الدعم</string>
+    <string name="about_description">أداة تشغيل خفيفة لـ Headunit Revived</string>
+
+    <!-- Language -->
+    <string name="language_label">اللغة</string>
+    <string name="language_system_default">افتراضي النظام</string>
+    <string name="language_english">English</string>
+    <string name="language_portuguese">Portuguese (Brazil)</string>
+    <string name="language_german">Deutsch</string>
+    <string name="language_russian">Русский</string>
+    <string name="language_arabic">العربية</string>
+
+    <!-- Notifications & Service -->
+    <string name="notif_searching">جار البحث عن Headunit…</string>
+    <string name="notif_connected">متصل بـ Android Auto</string>
+    <string name="notif_disconnected">انقطع اتصال Android Auto</string>
+    <string name="notif_stop">إيقاف</string>
+    <string name="notif_channel_name">Wireless Helper</string>
+    <string name="connected">متصل</string>
+
+    <!-- About Dialog -->
+    <string name="about_dialog_body">Wireless Helper هو تطبيق تشغيل لـ Headunit Revived.\n\nتطوير André Rinas\n© 2026</string>
+
+    <!-- Bluetooth -->
+    <string name="no_paired_devices">لا توجد أجهزة بلوتوث مقترنة</string>
+    <string name="select_bt_device">اختر جهاز البلوتوث</string>
+    <string name="auto_start_linked">التشغيل التلقائي مرتبط بـ %s</string>
+</resources>

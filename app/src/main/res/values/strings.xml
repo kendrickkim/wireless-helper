@@ -62,4 +62,9 @@
     <string name="no_paired_devices">No paired Bluetooth devices found</string>
     <string name="select_bt_device">Select Bluetooth Device</string>
     <string name="auto_start_linked">Auto-start linked to %s</string>
+
+    <string name="shortcut_start_title">Start Searching</string>
+    <string name="shortcut_start_desc">Start searching for Android Auto</string>
+    <string name="shortcut_stop_title">Stop Searching</string>
+    <string name="shortcut_stop_desc">Stop the active search</string>
 </resources>

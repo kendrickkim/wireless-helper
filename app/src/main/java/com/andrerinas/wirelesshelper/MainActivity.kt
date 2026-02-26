@@ -94,6 +94,7 @@ class MainActivity : AppCompatActivity() {
         initializeViews()
         setupListeners()
         restoreState()
+        handleIntent(intent)
 
         val scrollView = findViewById<View>(R.id.main_root).findViewWithTag<View>("scroll_view") ?: findViewById(R.id.main_root)
         // Note: I'll use the root but ensure the ScrollView gets the padding if possible.
@@ -487,6 +488,44 @@ class MainActivity : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
         handler.removeCallbacks(statusPoller)
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        handleIntent(intent)
+    }
+
+    private fun handleIntent(intent: Intent?) {
+        if (intent == null) return
+        val data = intent.data ?: return
+        
+        if (data.scheme == "wirelesshelper") {
+            when (data.host) {
+                "start" -> {
+                    // Handle optional mode parameter
+                    val modeParam = data.getQueryParameter("mode")
+                    if (!modeParam.isNullOrEmpty()) {
+                        val modeIdx = when (modeParam.lowercase()) {
+                            "nsd" -> 0
+                            "phone-hotspot" -> 1
+                            "tablet-hotspot" -> 2
+                            "wifi-direct" -> 3
+                            else -> -1
+                        }
+                        if (modeIdx != -1) {
+                            getSharedPreferences("WirelessHelperPrefs", Context.MODE_PRIVATE).edit {
+                                putInt("connection_mode", modeIdx)
+                            }
+                            tvConnectionModeValue.text = connectionModes[modeIdx]
+                        }
+                    }
+                    if (!isServiceRunning) checkPermissionsAndStart()
+                }
+                "stop" -> {
+                    if (isServiceRunning) stopLauncherService()
+                }
+            }
+        }
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {

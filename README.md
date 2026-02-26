@@ -4,6 +4,8 @@
 
 # Wireless Helper
 
+<a href='https://play.google.com/store/apps/details?id=com.andrerinas.wirelesshelper'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png' width="200"/></a>
+
 A lightweight launcher utility for **Headunit Revived**.
 
 This app acts as a trigger to start Android Auto Wireless on your phone. It automatically detects your tablet running Headunit Revived via NSD (mDNS) or a passive TCP trigger, ensuring a seamless wireless connection experience.
@@ -20,7 +22,37 @@ To ensure reliable background auto-start (Bluetooth/WiFi) and a stable connectio
 2. **Permissions:** Grant Bluetooth and Location permissions when prompted.
 3. **Paired Devices:** Select your car's Bluetooth device in the settings.
 
+## Automation (Tasker / MacroDroid / ADB)
+Wireless Helper supports remote control via Android Intents and App Shortcuts.
+
+### URI Schemes
+- **Start Search:** `wirelesshelper://start`
+- **Start with Specific Mode:** `wirelesshelper://start?mode=<MODE_ID>`
+- **Stop Search:** `wirelesshelper://stop`
+
+### Supported Modes
+| Mode ID | Description |
+| :--- | :--- |
+| `nsd` | Shared Wi-Fi (Auto-search) |
+| `phone-hotspot` | Phone Hotspot mode |
+| `tablet-hotspot` | Tablet Hotspot (Passive) |
+| `wifi-direct` | Wi-Fi Direct (Experimental) |
+
+### ADB Examples
+```bash
+# Start searching in Phone Hotspot mode
+adb shell am start -a android.intent.action.VIEW -d "wirelesshelper://start?mode=phone-hotspot"
+
+# Stop searching
+adb shell am start -a android.intent.action.VIEW -d "wirelesshelper://stop"
+```
+
 ## Changelog
+### v.1.0.0 - First ready version for Playstore!
+- Added Deep Links and App Shortcuts for full automation (Samsung Modes & Routines support).
+- Added Arabic translation, thanks to @A5H0
+- Improved background activity launch and service lifecycle.
+
 ### v.0.5.0
 - Added 1x1 Widget for Launcher
 - Added Quick-Settings-Tile
