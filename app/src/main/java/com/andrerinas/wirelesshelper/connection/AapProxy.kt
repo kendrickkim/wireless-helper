@@ -82,21 +82,14 @@ class AapProxy(private val remoteIp: String, private val remotePort: Int = 5288,
         try {
             while (isRunning) {
                 val read = input.read(buffer)
-                if (read == -1) {
-                    Log.i(TAG, "$name: Input reached EOF. Closing bridge.")
-                    break
-                }
+                if (read == -1) break
                 output.write(buffer, 0, read)
                 output.flush()
             }
         } catch (e: Exception) {
-            Log.d(TAG, "$name: Error during pump: ${e.message}")
+            Log.d(TAG, "$name error: ${e.message}")
         } finally {
-            // If one direction fails, the entire proxy should stop to trigger cleanup
-            if (isRunning) {
-                Log.i(TAG, "$name: Triggering global proxy stop.")
-                stop()
-            }
+            if (isRunning) stop()
         }
     }
 

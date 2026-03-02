@@ -1,12 +1,9 @@
 package com.andrerinas.wirelesshelper.strategy
 
-import android.app.Service
 import android.content.Context
 import android.content.Intent
-import android.database.Cursor
 import android.net.ConnectivityManager
 import android.net.Network
-import android.net.Uri
 import android.os.Build
 import android.os.Parcelable
 import android.util.Log
@@ -23,7 +20,6 @@ abstract class BaseStrategy(protected val context: Context, private val scope: C
     }
 
     protected val TAG = "HUREV_WIFI"
-    private val carConnectionUri = Uri.Builder().scheme("content").authority("androidx.car.app.connection").build()
     private var activeProxy: AapProxy? = null
     var stateListener: StateListener? = null
     protected val isLaunching = AtomicBoolean(false)
@@ -38,6 +34,19 @@ abstract class BaseStrategy(protected val context: Context, private val scope: C
 
     companion object {
         const val ACTION_TRIGGER_INTENT = "com.andrerinas.wirelesshelper.ACTION_TRIGGER_INTENT"
+    }
+
+    private fun createFakeNetwork(netId: Int): Network? {
+        val parcel = android.os.Parcel.obtain()
+        return try {
+            parcel.writeInt(netId)
+            parcel.setDataPosition(0)
+            Network.CREATOR.createFromParcel(parcel)
+        } catch (e: Exception) {
+            null
+        } finally {
+            parcel.recycle()
+        }
     }
 
     protected fun launchAndroidAuto(hostIp: String, forceFakeNetwork: Boolean = false) {
@@ -68,7 +77,9 @@ abstract class BaseStrategy(protected val context: Context, private val scope: C
                 val localPort = proxy.start()
 
                 val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-                val activeNetwork = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) connectivityManager.activeNetwork else null
+                // FALLBACK TO ID 0 IF OFFLINE
+                val targetNetwork = (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) connectivityManager.activeNetwork else null)
+                    ?: createFakeNetwork(0)
 
                 val wifiInfo: Parcelable? = try {
                     val clazz = Class.forName("android.net.wifi.WifiInfo")
@@ -82,11 +93,11 @@ abstract class BaseStrategy(protected val context: Context, private val scope: C
                     addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     putExtra("PARAM_HOST_ADDRESS", "127.0.0.1")
                     putExtra("PARAM_SERVICE_PORT", localPort)
-                    activeNetwork?.let { putExtra("PARAM_SERVICE_WIFI_NETWORK", it) }
+                    targetNetwork?.let { putExtra("PARAM_SERVICE_WIFI_NETWORK", it) }
                     wifiInfo?.let { putExtra("wifi_info", it) }
                 }
 
-                Log.i(TAG, "Firing Proxy Intent. LocalPort=$localPort")
+                Log.i(TAG, "Firing Intent. Host=127.0.0.1, Port=$localPort, Network=$targetNetwork")
                 
                 // 1. Try via Broadcast (if TransparentTriggerActivity is active)
                 val broadcastIntent = Intent(ACTION_TRIGGER_INTENT).apply {
