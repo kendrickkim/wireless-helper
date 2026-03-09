@@ -48,6 +48,10 @@ adb shell am start -a android.intent.action.VIEW -d "wirelesshelper://stop"
 ```
 
 ## Changelog
+### v.1.2.0
+- Fixing start of Android Auto with new Version 16.4. The intent is gone and now a broadcast.
+- Fixing Fatal Crash on Wifi-Direct closing
+
 ### v.1.1.0
 - Enhancement for the Wifi-Direct Mode. Note: Since Android 10 this mode is very restrictive and it might now work for every modern phone. Just try it
 
