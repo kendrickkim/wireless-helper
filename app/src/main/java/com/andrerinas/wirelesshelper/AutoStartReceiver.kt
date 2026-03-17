@@ -19,15 +19,26 @@ class AutoStartReceiver : BroadcastReceiver() {
 
         if (autoStartMode == 0) return
 
+        val targetMac = prefs.getString("auto_start_bt_mac", null)
+
         if (action == BluetoothDevice.ACTION_ACL_CONNECTED) {
             val device = intent.getParcelableExtra<BluetoothDevice>(BluetoothDevice.EXTRA_DEVICE)
-            val targetMac = prefs.getString("auto_start_bt_mac", null)
-            
             Log.i(TAG, "BT Device connected: ${device?.name} (${device?.address})")
             
             if (device?.address == targetMac) {
                 Log.i(TAG, "MATCH! Starting service...")
                 startService(context)
+            }
+        } else if (action == BluetoothDevice.ACTION_ACL_DISCONNECTED) {
+            val device = intent.getParcelableExtra<BluetoothDevice>(BluetoothDevice.EXTRA_DEVICE)
+            Log.i(TAG, "BT Device disconnected: ${device?.name} (${device?.address})")
+
+            if (device?.address == targetMac) {
+                val stopOnDisconnect = prefs.getBoolean("bt_disconnect_stop", false)
+                if (stopOnDisconnect) {
+                    Log.i(TAG, "MATCH! Stopping service as requested by settings...")
+                    stopService(context)
+                }
             }
         }
     }
@@ -42,5 +53,12 @@ class AutoStartReceiver : BroadcastReceiver() {
         } catch (e: Exception) {
             Log.e(TAG, "Failed to auto-start service: ${e.message}", e)
         }
+    }
+
+    private fun stopService(context: Context) {
+        val serviceIntent = Intent(context, WirelessHelperService::class.java).apply {
+            action = WirelessHelperService.ACTION_STOP
+        }
+        context.startService(serviceIntent)
     }
 }

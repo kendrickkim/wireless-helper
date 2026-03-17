@@ -15,6 +15,10 @@
     <string name="auto_start_wifi">Bei spezifischer WLAN-Verbindung</string>
     
     <string name="bt_device_label">Bluetooth-Gerät</string>
+    <string name="bt_auto_reconnect_title">Autom. Wiederverbinden</string>
+    <string name="bt_auto_reconnect_desc">Versucht die Sitzung neu zu starten, wenn die Verbindung abbricht, aber Bluetooth noch verbunden ist.</string>
+    <string name="bt_disconnect_stop_title">Stoppen bei BT-Verlust</string>
+    <string name="bt_disconnect_stop_desc">Beendet den Suchdienst automatisch, wenn die Bluetooth-Verbindung zum Auto getrennt wird.</string>
     <string name="wifi_ssid_label">WLAN-Netzwerk (SSID)</string>
     <string name="wifi_connected_network">Verbundenes WLAN-Netzwerk</string>
     <string name="wifi_ssid_hint">WLAN SSID eingeben</string>

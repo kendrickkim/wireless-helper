@@ -15,6 +15,10 @@
     <string name="auto_start_wifi">При подключении к определенному Wi-Fi</string>
 
     <string name="bt_device_label">Устройство Bluetooth</string>
+    <string name="bt_auto_reconnect_title">Автопереподключение</string>
+    <string name="bt_auto_reconnect_desc">Попытаться перезапустить сессию, если соединение прервано, но Bluetooth все еще подключен.</string>
+    <string name="bt_disconnect_stop_title">Остановка при потере BT</string>
+    <string name="bt_disconnect_stop_desc">Автоматически останавливать сервис, когда Bluetooth автомобиля отключается.</string>
     <string name="wifi_ssid_label">Сеть Wi-Fi (SSID)</string>
     <string name="wifi_connected_network">Подключенная сеть Wi-Fi</string>
     <string name="wifi_ssid_hint">Введите SSID Wi-Fi</string>

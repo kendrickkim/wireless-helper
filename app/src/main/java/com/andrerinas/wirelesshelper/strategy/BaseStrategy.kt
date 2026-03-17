@@ -98,7 +98,7 @@ abstract class BaseStrategy(protected val context: Context, private val scope: C
 
                 val intent = Intent().apply {
                     setClassName("com.google.android.projection.gearhead", "com.google.android.apps.auto.wireless.setup.service.impl.WirelessStartupActivity")
-                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
                     putExtra("PARAM_HOST_ADDRESS", "127.0.0.1")
                     putExtra("PARAM_SERVICE_PORT", localPort)
                     targetNetwork?.let { putExtra("PARAM_SERVICE_WIFI_NETWORK", it) }

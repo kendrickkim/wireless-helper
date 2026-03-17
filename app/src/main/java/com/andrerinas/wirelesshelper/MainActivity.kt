@@ -46,6 +46,10 @@ class MainActivity : AppCompatActivity() {
     // Conditional Options
     private lateinit var layoutBluetoothDevice: View
     private lateinit var tvBluetoothDeviceValue: TextView
+    private lateinit var layoutBtAutoReconnect: View
+    private lateinit var switchBtAutoReconnect: androidx.appcompat.widget.SwitchCompat
+    private lateinit var layoutBtDisconnectStop: View
+    private lateinit var switchBtDisconnectStop: androidx.appcompat.widget.SwitchCompat
 
     private lateinit var layoutWifiNetwork: View
     private lateinit var tvWifiNetworkValue: TextView
@@ -133,6 +137,12 @@ class MainActivity : AppCompatActivity() {
         layoutBluetoothDevice = findViewById(R.id.layoutBluetoothDevice)
         tvBluetoothDeviceValue = findViewById(R.id.tvBluetoothDeviceValue)
 
+        layoutBtAutoReconnect = findViewById(R.id.layoutBtAutoReconnect)
+        switchBtAutoReconnect = findViewById(R.id.switchBtAutoReconnect)
+
+        layoutBtDisconnectStop = findViewById(R.id.layoutBtDisconnectStop)
+        switchBtDisconnectStop = findViewById(R.id.switchBtDisconnectStop)
+
         layoutWifiNetwork = findViewById(R.id.layoutWifiNetwork)
         tvWifiNetworkValue = findViewById(R.id.tvWifiNetworkValue)
 
@@ -206,6 +216,18 @@ class MainActivity : AppCompatActivity() {
 
         layoutBluetoothDevice.setOnClickListener {
             showBluetoothDeviceSelector()
+        }
+
+        layoutBtAutoReconnect.setOnClickListener {
+            val newValue = !switchBtAutoReconnect.isChecked
+            switchBtAutoReconnect.isChecked = newValue
+            getSharedPreferences("WirelessHelperPrefs", Context.MODE_PRIVATE).edit { putBoolean("bt_auto_reconnect", newValue) }
+        }
+
+        layoutBtDisconnectStop.setOnClickListener {
+            val newValue = !switchBtDisconnectStop.isChecked
+            switchBtDisconnectStop.isChecked = newValue
+            getSharedPreferences("WirelessHelperPrefs", Context.MODE_PRIVATE).edit { putBoolean("bt_disconnect_stop", newValue) }
         }
 
         layoutWifiNetwork.setOnClickListener {
@@ -395,6 +417,8 @@ class MainActivity : AppCompatActivity() {
         updateAutoStartUI(autoMode)
         
         tvBluetoothDeviceValue.text = prefs.getString("auto_start_bt_name", getString(R.string.not_set))
+        switchBtAutoReconnect.isChecked = prefs.getBoolean("bt_auto_reconnect", false)
+        switchBtDisconnectStop.isChecked = prefs.getBoolean("bt_disconnect_stop", false)
         tvWifiNetworkValue.text = prefs.getString("auto_start_wifi_ssid", getString(R.string.not_set))
         tvWifiDirectNameValue.text = prefs.getString("wifi_direct_target_name", getString(R.string.not_set))
 
@@ -420,14 +444,20 @@ class MainActivity : AppCompatActivity() {
         when (mode) {
             0 -> { // No
                 layoutBluetoothDevice.visibility = View.GONE
+                layoutBtAutoReconnect.visibility = View.GONE
+                layoutBtDisconnectStop.visibility = View.GONE
                 layoutWifiNetwork.visibility = View.GONE
             }
             1 -> { // Bluetooth
                 layoutBluetoothDevice.visibility = View.VISIBLE
+                layoutBtAutoReconnect.visibility = View.VISIBLE
+                layoutBtDisconnectStop.visibility = View.VISIBLE
                 layoutWifiNetwork.visibility = View.GONE
             }
             2 -> { // WiFi
                 layoutBluetoothDevice.visibility = View.GONE
+                layoutBtAutoReconnect.visibility = View.GONE
+                layoutBtDisconnectStop.visibility = View.GONE
                 layoutWifiNetwork.visibility = View.VISIBLE
             }
         }

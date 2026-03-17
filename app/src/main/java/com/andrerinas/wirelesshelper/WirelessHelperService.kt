@@ -21,6 +21,8 @@ import com.andrerinas.wirelesshelper.strategy.StrategyWifiDirect
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.delay
 
 class WirelessHelperService : Service(), BaseStrategy.StateListener {
 
@@ -93,9 +95,52 @@ class WirelessHelperService : Service(), BaseStrategy.StateListener {
 
     override fun onProxyDisconnected() {
         isConnected = false
-        Log.i(TAG, "Proxy disconnected. Stopping service.")
+        Log.i(TAG, "AA proxy connection lost.")
         updateAllUIs()
-        stopSelf()
+
+        val prefs = getSharedPreferences("WirelessHelperPrefs", Context.MODE_PRIVATE)
+        val autoReconnect = prefs.getBoolean("bt_auto_reconnect", false)
+        val targetMac = prefs.getString("auto_start_bt_mac", null)
+
+        if (autoReconnect && targetMac != null && isBluetoothDeviceConnected(targetMac)) {
+            Log.i(TAG, "Bluetooth still connected and auto-reconnect enabled. Restarting strategy...")
+            updateNotification(getString(R.string.notif_searching))
+            serviceScope.launch {
+                delay(3000) // Puffer vor Neustart
+                startSelectedStrategy()
+            }
+        } else {
+            Log.i(TAG, "Stopping service.")
+            stopSelf()
+        }
+    }
+
+    private fun isBluetoothDeviceConnected(mac: String): Boolean {
+        try {
+            val bm = getSystemService(Context.BLUETOOTH_SERVICE) as android.bluetooth.BluetoothManager
+            val adapter = bm.adapter ?: return false
+            
+            // Check common profiles (A2DP for music, HEADSET for calls)
+            val a2dp = adapter.getProfileConnectionState(android.bluetooth.BluetoothProfile.A2DP)
+            val hfp = adapter.getProfileConnectionState(android.bluetooth.BluetoothProfile.HEADSET)
+            
+            if (a2dp != android.bluetooth.BluetoothProfile.STATE_CONNECTED && 
+                hfp != android.bluetooth.BluetoothProfile.STATE_CONNECTED) {
+                return false
+            }
+
+            // More precise check: is OUR specific device connected?
+            // Since we can't easily get the list of connected devices without a listener or permissions,
+            // the profile state is a good indicator. If we want to be 100% sure:
+            val bondedDevices = adapter.bondedDevices
+            val device = bondedDevices.find { it.address == mac } ?: return false
+            
+            // ACL connection is usually what we want
+            // For now, if the profile is connected, we assume it's our car
+            return true 
+        } catch (e: Exception) {
+            return false
+        }
     }
 
     override fun onLaunchTimeout() {
@@ -109,7 +154,16 @@ class WirelessHelperService : Service(), BaseStrategy.StateListener {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        when (intent?.action) {
+        if (intent == null) {
+            // Service was restarted by the system
+            if (isRunning) {
+                Log.i(TAG, "Service restarted by system. Resuming strategy.")
+                startSelectedStrategy()
+            }
+            return START_STICKY
+        }
+
+        when (intent.action) {
             ACTION_STOP -> {
                 isRunning = false
                 updateAllUIs()

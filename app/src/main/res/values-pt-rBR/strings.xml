@@ -15,6 +15,10 @@
     <string name="auto_start_wifi">Sim (WIFI)</string>
     
     <string name="bt_device_label">Dispositivo Bluetooth</string>
+    <string name="bt_auto_reconnect_title">Tentar reconexão automática</string>
+    <string name="bt_auto_reconnect_desc">Tenta reiniciar a sessão se a conexão cair enquanto o Bluetooth ainda estiver conectado.</string>
+    <string name="bt_disconnect_stop_title">Parar ao desconectar BT</string>
+    <string name="bt_disconnect_stop_desc">Interrompe automaticamente o serviço quando o Bluetooth do carro for desconectado.</string>
     <string name="wifi_ssid_label">Rede Wi-Fi</string>
     <string name="wifi_connected_network">Rede Wi-Fi Conectada</string>
     <string name="wifi_ssid_hint">Digite o SSID do Wi-Fi</string>

@@ -15,6 +15,10 @@
     <string name="auto_start_wifi">On Specific Wi-Fi Connection</string>
     
     <string name="bt_device_label">Bluetooth Device</string>
+    <string name="bt_auto_reconnect_title">Try to auto reconnect</string>
+    <string name="bt_auto_reconnect_desc">Attempt to restart the session if the connection drops while Bluetooth is still connected.</string>
+    <string name="bt_disconnect_stop_title">Stop on BT disconnect</string>
+    <string name="bt_disconnect_stop_desc">Automatically stop the service when the car\'s Bluetooth is disconnected.</string>
     <string name="wifi_ssid_label">Wi-Fi Network (SSID)</string>
     <string name="wifi_connected_network">Connected Wi-Fi Network</string>
     <string name="wifi_ssid_hint">Enter Wi-Fi SSID</string>
