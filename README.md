@@ -48,6 +48,9 @@ adb shell am start -a android.intent.action.VIEW -d "wirelesshelper://stop"
 ```
 
 ## Changelog
+### v.1.3.1
+- Added: Spanish translation 🇪🇸 thanks to @tsabaia
+
 ### v.1.3.0
 - Added: Try to auto reconnect when bluetooth device still connected
 - Added: Ignore bluetooth disconnection and keep service running
