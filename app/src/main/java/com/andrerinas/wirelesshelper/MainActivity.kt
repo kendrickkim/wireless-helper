@@ -57,6 +57,10 @@ class MainActivity : AppCompatActivity() {
     // Conditional Options
     private lateinit var layoutBluetoothDevice: View
     private lateinit var tvBluetoothDeviceValue: TextView
+    private lateinit var layoutBtAutoReconnect: View
+    private lateinit var switchBtAutoReconnect: androidx.appcompat.widget.SwitchCompat
+    private lateinit var layoutBtDisconnectStop: View
+    private lateinit var switchBtDisconnectStop: androidx.appcompat.widget.SwitchCompat
 
     private lateinit var layoutWifiNetwork: View
     private lateinit var tvWifiNetworkValue: TextView
@@ -155,6 +159,12 @@ class MainActivity : AppCompatActivity() {
         layoutBluetoothDevice = findViewById(R.id.layoutBluetoothDevice)
         tvBluetoothDeviceValue = findViewById(R.id.tvBluetoothDeviceValue)
 
+        layoutBtAutoReconnect = findViewById(R.id.layoutBtAutoReconnect)
+        switchBtAutoReconnect = findViewById(R.id.switchBtAutoReconnect)
+
+        layoutBtDisconnectStop = findViewById(R.id.layoutBtDisconnectStop)
+        switchBtDisconnectStop = findViewById(R.id.switchBtDisconnectStop)
+
         layoutWifiNetwork = findViewById(R.id.layoutWifiNetwork)
         tvWifiNetworkValue = findViewById(R.id.tvWifiNetworkValue)
 
@@ -237,6 +247,9 @@ class MainActivity : AppCompatActivity() {
         layoutBluetoothDevice.setOnClickListener {
             showBluetoothDeviceSelector()
         }
+
+        setupSwitchSetting(layoutBtAutoReconnect, switchBtAutoReconnect, "bt_auto_reconnect")
+        setupSwitchSetting(layoutBtDisconnectStop, switchBtDisconnectStop, "bt_disconnect_stop")
 
         layoutWifiNetwork.setOnClickListener {
             showWifiSelector()
@@ -414,6 +427,15 @@ class MainActivity : AppCompatActivity() {
             .show()
     }
 
+    private fun setupSwitchSetting(layout: View, switch: androidx.appcompat.widget.SwitchCompat, prefKey: String) {
+        val prefs = getSharedPreferences("WirelessHelperPrefs", Context.MODE_PRIVATE)
+        layout.setOnClickListener {
+            val newValue = !switch.isChecked
+            switch.isChecked = newValue
+            prefs.edit { putBoolean(prefKey, newValue) }
+        }
+    }
+
     private fun restoreState() {
         val prefs = getSharedPreferences("WirelessHelperPrefs", Context.MODE_PRIVATE)
         
@@ -425,6 +447,8 @@ class MainActivity : AppCompatActivity() {
         updateAutoStartUI(autoMode)
         
         tvBluetoothDeviceValue.text = prefs.getString("auto_start_bt_name", getString(R.string.not_set))
+        switchBtAutoReconnect.isChecked = prefs.getBoolean("bt_auto_reconnect", false)
+        switchBtDisconnectStop.isChecked = prefs.getBoolean("bt_disconnect_stop", false)
         tvWifiNetworkValue.text = prefs.getString("auto_start_wifi_ssid", getString(R.string.not_set))
         tvWifiDirectNameValue.text = prefs.getString("wifi_direct_target_name", getString(R.string.not_set))
 
@@ -450,14 +474,20 @@ class MainActivity : AppCompatActivity() {
         when (mode) {
             0 -> { // No
                 layoutBluetoothDevice.visibility = View.GONE
+                layoutBtAutoReconnect.visibility = View.GONE
+                layoutBtDisconnectStop.visibility = View.GONE
                 layoutWifiNetwork.visibility = View.GONE
             }
             1 -> { // Bluetooth
                 layoutBluetoothDevice.visibility = View.VISIBLE
+                layoutBtAutoReconnect.visibility = View.VISIBLE
+                layoutBtDisconnectStop.visibility = View.VISIBLE
                 layoutWifiNetwork.visibility = View.GONE
             }
             2 -> { // WiFi
                 layoutBluetoothDevice.visibility = View.GONE
+                layoutBtAutoReconnect.visibility = View.GONE
+                layoutBtDisconnectStop.visibility = View.GONE
                 layoutWifiNetwork.visibility = View.VISIBLE
             }
         }
@@ -557,6 +587,25 @@ class MainActivity : AppCompatActivity() {
         super.onResume()
         handler.post(statusPoller)
         checkBatteryOptimization()
+        checkOverlayPermission()
+    }
+
+    private fun checkOverlayPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (!android.provider.Settings.canDrawOverlays(this)) {
+                MaterialAlertDialogBuilder(this, R.style.DarkAlertDialog)
+                    .setTitle(R.string.overlay_perm_title)
+                    .setMessage(R.string.overlay_perm_msg)
+                    .setCancelable(false)
+                    .setPositiveButton(R.string.overlay_perm_button) { _, _ ->
+                        val intent = Intent(android.provider.Settings.ACTION_MANAGE_OVERLAY_PERMISSION).apply {
+                            data = android.net.Uri.parse("package:$packageName")
+                        }
+                        startActivity(intent)
+                    }
+                    .show()
+            }
+        }
     }
 
     private fun checkBatteryOptimization() {
