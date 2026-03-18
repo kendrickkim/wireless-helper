@@ -184,7 +184,6 @@ class MainActivity : AppCompatActivity() {
         layoutAbout.setOnClickListener {
             MaterialAlertDialogBuilder(this, R.style.DarkAlertDialog)
                 .setTitle(R.string.about)
-                // .setMessage("Wireless Helper is a trigger app for Headunit Revived.\n\nDeveloped by André Rinas\n© 2026")
                 .setMessage(getString(R.string.about_dialog_body))
                 .setPositiveButton(android.R.string.ok, null)
                 .show()
@@ -199,8 +198,12 @@ class MainActivity : AppCompatActivity() {
                 // Stop service if it's already running
                 stopLauncherService() 
             } else {
+                val prefs = getSharedPreferences("WirelessHelperPrefs", Context.MODE_PRIVATE)
+                val currentMode = prefs.getInt("connection_mode", 0)
+
                 // Check Wi-Fi state before starting. isFromUi = true will trigger a Dialog Popup.
-                WifiNotificationHelper.checkWifiAndConnect(this, isFromUi = true) {
+                // We pass currentMode to ignore the Wi-Fi check if it's Phone Hotspot (1)
+                WifiNotificationHelper.checkWifiAndConnect(this, isFromUi = true, connectionMode = currentMode) {
                     checkPermissionsAndStart()
                 }
             }
@@ -662,9 +665,13 @@ class MainActivity : AppCompatActivity() {
                             tvConnectionModeValue.text = connectionModes[modeIdx]
                         }
                     }
+                    
                     // Wrapping deep-link trigger with Wi-Fi check (Background notification)
                     if (!isServiceRunning) {
-                        WifiNotificationHelper.checkWifiAndConnect(this, isFromUi = false) {
+                        val prefs = getSharedPreferences("WirelessHelperPrefs", Context.MODE_PRIVATE)
+                        val currentMode = prefs.getInt("connection_mode", 0)
+
+                        WifiNotificationHelper.checkWifiAndConnect(this, isFromUi = false, connectionMode = currentMode) {
                             checkPermissionsAndStart()
                         }
                     }
