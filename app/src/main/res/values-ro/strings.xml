@@ -46,7 +46,11 @@
 
     <string name="not_set">Nesetat</string>
     
-    <string name="logs_label">Jurnale:</string>
+    <string name="logs_label">Exportare jurnale</string>
+    <string name="export_log_description">Salvați jurnalele sistemului într-un fișier pentru depanare</string>
+    <string name="export_log_title">Jurnale exportate</string>
+    <string name="export_log_saved">Jurnalele au fost salvate la:\n\n%s</string>
+    <string name="share">Partajare</string>
     <string name="category_info">INFO</string>
     <string name="settings_header">SETĂRI</string>
     <string name="version">Versiune</string>
@@ -57,11 +61,19 @@
     <string name="language_label">Limbă</string>
     <string name="language_system_default">Sistem implicit</string>
     <string name="language_english">English</string>
+    <string name="language_arabic">العربية (Arabic)</string>
+    <string name="language_czech">Čeština (Czech)</string>
+    <string name="language_german">Deutsch (German)</string>
+    <string name="language_spanish">Español (Spanish)</string>
+    <string name="language_spanish_spain">Español (España)</string>
+    <string name="language_hungarian">Magyar (Hungarian)</string>
+    <string name="language_dutch">Nederlands (Dutch)</string>
+    <string name="language_polish">Polski (Polish)</string>
     <string name="language_portuguese">Português (Brasil)</string>
-    <string name="language_german">Deutsch</string>
-    <string name="language_russian">Русский</string>
-    <string name="language_arabic">العربية</string>
-    <string name="language_spanish">Español</string>
+    <string name="language_romanian">Română (Romanian)</string>
+    <string name="language_russian">Русский (Russian)</string>
+    <string name="language_ukrainian">Українська (Ukrainian)</string>
+    <string name="language_chinese">繁體中文 (Taiwan)</string>
 
     <!-- Notifications & Service -->
     <string name="notif_searching">Căutare unitate…</string>

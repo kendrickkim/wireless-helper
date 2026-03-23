@@ -46,21 +46,33 @@
 
     <string name="not_set">No establecido</string>
     
-    <string name="logs_label">Registros:</string>
+    <string name="logs_label">Exportar registros</string>
+    <string name="export_log_description">Guardar registros del sistema en un archivo para depuración</string>
+    <string name="export_log_title">Registros exportados</string>
+    <string name="export_log_saved">Los registros se han guardado en:\n\n%s</string>
+    <string name="share">Compartir</string>
     <string name="category_info">INFO</string>
     <string name="settings_header">AJUSTES</string>
     <string name="version">Versión</string>
     <string name="about">Acerca de y Soporte</string>
     <string name="about_description">Activador ligero para Headunit Revived</string>
-
-    <string name="language_label">Idioma</string>
-    <string name="language_system_default">Predeterminado del sistema</string>
-    <string name="language_english">English</string>
-    <string name="language_portuguese">Português (Brasil)</string>
-    <string name="language_german">Deutsch</string>
-    <string name="language_russian">Русский</string>
-    <string name="language_arabic">العربية</string>
-    <string name="language_spanish">Español</string>
+<!-- Language -->
+<string name="language_label">Idioma</string>
+<string name="language_system_default">Predeterminado del sistema</string>
+<string name="language_english">English</string>
+<string name="language_arabic">العربية (Arabic)</string>
+<string name="language_czech">Čeština (Czech)</string>
+<string name="language_german">Deutsch (German)</string>
+<string name="language_spanish">Español (Spanish)</string>
+<string name="language_spanish_spain">Español (España)</string>
+<string name="language_hungarian">Magyar (Hungarian)</string>
+<string name="language_dutch">Nederlands (Dutch)</string>
+<string name="language_polish">Polski (Polish)</string>
+<string name="language_portuguese">Português (Brasil)</string>
+<string name="language_romanian">Română (Romanian)</string>
+<string name="language_russian">Русский (Russian)</string>
+<string name="language_ukrainian">Українська (Ukrainian)</string>
+<string name="language_chinese">繁體中文 (Taiwan)</string>
 
     <string name="notif_searching">Buscando unidad principal…</string>
     <string name="notif_connected">Conectado a Android Auto</string>

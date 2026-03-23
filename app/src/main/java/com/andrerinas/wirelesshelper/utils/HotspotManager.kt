@@ -7,23 +7,23 @@ import android.os.Build
 import android.util.Log
 
 object HotspotManager {
-    private const val TAG = "HotspotManager"
+    private const val TAG = "HUREV_WIFI"
 
     /**
      * Attempts to enable the WiFi Hotspot.
-     * Note: This is highly restricted on modern Android versions (8.0+).
-     * It uses reflection to access hidden ConnectivityManager methods.
      */
     fun setHotspotEnabled(context: Context, enabled: Boolean): Boolean {
-        Log.i(TAG, "Attempting to set hotspot enabled: $enabled")
+        Log.i(TAG, "[HotspotManager] Attempting to set hotspot enabled: $enabled")
         
         // Method 1: Legacy reflection (Android < 8.0)
         try {
             val wifiManager = context.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
             val method = wifiManager.javaClass.getMethod("setWifiApEnabled", android.net.wifi.WifiConfiguration::class.java, Boolean::class.javaPrimitiveType)
-            return method.invoke(wifiManager, null, enabled) as Boolean
+            val result = method.invoke(wifiManager, null, enabled) as Boolean
+            Log.d(TAG, "[HotspotManager] Legacy setWifiApEnabled returned: $result")
+            return result
         } catch (e: Exception) {
-            Log.d(TAG, "Legacy setWifiApEnabled failed: ${e.message}")
+            Log.d(TAG, "[HotspotManager] Legacy setWifiApEnabled failed: ${e.message}")
         }
 
         // Method 2: ConnectivityManager.startTethering (Android 8.0 - 10.0)
@@ -35,20 +35,20 @@ object HotspotManager {
                 val stopTethering = methods.find { it.name == "stopTethering" }
 
                 if (enabled && startTethering != null) {
-                    // startTethering(int type, boolean showProvisioningUi, OnStartTetheringCallback callback)
-                    // type 0 is TYPE_WIFI
+                    Log.d(TAG, "[HotspotManager] Calling startTethering via reflection")
                     startTethering.invoke(connectivityManager, 0, false, null)
                     return true
                 } else if (!enabled && stopTethering != null) {
+                    Log.d(TAG, "[HotspotManager] Calling stopTethering via reflection")
                     stopTethering.invoke(connectivityManager, 0)
                     return true
                 }
             } catch (e: Exception) {
-                Log.d(TAG, "ConnectivityManager tethering call failed: ${e.message}")
+                Log.d(TAG, "[HotspotManager] ConnectivityManager tethering call failed: ${e.message}")
             }
         }
 
-        Log.w(TAG, "Could not enable hotspot automatically. System restrictions apply.")
+        Log.w(TAG, "[HotspotManager] Could not enable hotspot automatically. System restrictions apply.")
         return false
     }
 }

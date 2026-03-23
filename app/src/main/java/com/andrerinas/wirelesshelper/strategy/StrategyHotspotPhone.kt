@@ -19,7 +19,8 @@ class StrategyHotspotPhone(context: Context, private val scope: CoroutineScope) 
         Log.i(TAG, "Strategy: Hotspot Phone (TCP 5289 Trigger Listener)")
         
         // Attempt to auto-enable hotspot (best effort)
-        HotspotManager.setHotspotEnabled(context, true)
+        val success = HotspotManager.setHotspotEnabled(context, true)
+        Log.i(TAG, "Auto-enable hotspot attempt finished. Success: $success")
         
         getStrategyScope().launch(Dispatchers.IO) {
             try {

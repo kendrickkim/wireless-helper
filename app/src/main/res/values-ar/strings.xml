@@ -42,7 +42,11 @@
 
     <string name="not_set">غير محدد</string>
 
-    <string name="logs_label">السجلات:</string>
+    <string name="logs_label">تصدير السجلات</string>
+    <string name="export_log_description">حفظ سجلات النظام في ملف لاستكشاف الأخطاء وإصلاحها</string>
+    <string name="export_log_title">تم تصدير السجلات</string>
+    <string name="export_log_saved">تم حفظ السجلات في:\n\n%s</string>
+    <string name="share">مشاركة</string>
     <string name="category_info">معلومات</string>
     <string name="settings_header">الإعدادات</string>
     <string name="version">الإصدار</string>
@@ -53,11 +57,19 @@
     <string name="language_label">اللغة</string>
     <string name="language_system_default">افتراضي النظام</string>
     <string name="language_english">English</string>
-    <string name="language_portuguese">Portuguese (Brazil)</string>
-    <string name="language_german">Deutsch</string>
-    <string name="language_russian">Русский</string>
-    <string name="language_arabic">العربية</string>
-    <string name="language_spanish">Spanish</string>
+    <string name="language_arabic">العربية (Arabic)</string>
+    <string name="language_czech">Čeština (Czech)</string>
+    <string name="language_german">Deutsch (German)</string>
+    <string name="language_spanish">Español (Spanish)</string>
+    <string name="language_spanish_spain">Español (España)</string>
+    <string name="language_hungarian">Magyar (Hungarian)</string>
+    <string name="language_dutch">Nederlands (Dutch)</string>
+    <string name="language_polish">Polski (Polish)</string>
+    <string name="language_portuguese">Português (Brasil)</string>
+    <string name="language_romanian">Română (Romanian)</string>
+    <string name="language_russian">Русский (Russian)</string>
+    <string name="language_ukrainian">Українська (Ukrainian)</string>
+    <string name="language_chinese">繁體中文 (Taiwan)</string>
 
     <!-- Notifications & Service -->
     <string name="notif_searching">جار البحث عن Headunit…</string>

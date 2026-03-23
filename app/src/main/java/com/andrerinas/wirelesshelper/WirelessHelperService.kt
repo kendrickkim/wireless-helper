@@ -61,16 +61,34 @@ class WirelessHelperService : Service(), BaseStrategy.StateListener {
             
             val pm = getSystemService(Context.POWER_SERVICE) as PowerManager
             wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "WirelessHelper:WakeLock")
-            wakeLock?.acquire(3600000) // 1 hour max
             
-            Log.i(TAG, "Locks acquired")
-        } catch (e: Exception) { Log.e(TAG, "Failed to acquire locks: ${e.message}") }
+            Log.i(TAG, "Locks initialized")
+        } catch (e: Exception) { Log.e(TAG, "Failed to initialize locks: ${e.message}") }
+    }
+
+    private fun acquireWakeLock() {
+        try {
+            if (wakeLock?.isHeld == false) {
+                wakeLock?.acquire(10 * 60 * 1000L) // 10 minutes max at a time
+                Log.d(TAG, "WakeLock acquired")
+            }
+        } catch (e: Exception) {}
+    }
+
+    private fun releaseWakeLock() {
+        try {
+            if (wakeLock?.isHeld == true) {
+                wakeLock?.release()
+                Log.d(TAG, "WakeLock released")
+            }
+        } catch (e: Exception) {}
     }
 
     private fun startSelectedStrategy() {
         val prefs = getSharedPreferences("WirelessHelperPrefs", Context.MODE_PRIVATE)
         val mode = prefs.getInt("connection_mode", 0)
         
+        acquireWakeLock()
         currentStrategy?.stop()
         
         currentStrategy = when (mode) {
@@ -91,6 +109,7 @@ class WirelessHelperService : Service(), BaseStrategy.StateListener {
 
     override fun onProxyConnected() {
         isConnected = true
+        acquireWakeLock()
         updateNotification(getString(R.string.notif_connected))
         updateAllUIs()
     }
@@ -110,13 +129,15 @@ class WirelessHelperService : Service(), BaseStrategy.StateListener {
 
         if (autoReconnect && anyTargetConnected) {
             Log.i(TAG, "Target Bluetooth still connected and auto-reconnect enabled. Restarting strategy...")
+            acquireWakeLock()
             updateNotification(getString(R.string.notif_searching))
             serviceScope.launch {
-                delay(3000) // Puffer vor Neustart
+                delay(3000) // Buffer vor Neustart
                 startSelectedStrategy()
             }
         } else {
             Log.i(TAG, "Stopping service.")
+            releaseWakeLock()
             stopSelf()
         }
     }
@@ -169,6 +190,7 @@ class WirelessHelperService : Service(), BaseStrategy.StateListener {
         when (intent.action) {
             ACTION_STOP -> {
                 isRunning = false
+                releaseWakeLock()
                 updateAllUIs()
                 stopSelf()
             }
@@ -191,7 +213,7 @@ class WirelessHelperService : Service(), BaseStrategy.StateListener {
         }
         try { 
             multicastLock?.release()
-            if (wakeLock?.isHeld == true) wakeLock?.release()
+            releaseWakeLock()
         } catch (e: Exception) { }
         serviceJob.cancel()
         updateAllUIs()

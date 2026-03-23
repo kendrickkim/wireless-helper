@@ -42,7 +42,11 @@
     
     <string name="not_set">Nenhum Selecionado</string>
     
-    <string name="logs_label">Logs:</string>
+    <string name="logs_label">Exportar logs</string>
+    <string name="export_log_description">Salvar logs do sistema em um arquivo para depuração</string>
+    <string name="export_log_title">Logs exportados</string>
+    <string name="export_log_saved">Os logs foram salvos em:\n\n%s</string>
+    <string name="share">Compartilhar</string>
     <string name="category_info">Informações</string>
     <string name="settings_header">Configurações</string>
     <string name="version">Versão</string>
@@ -52,12 +56,20 @@
     <!-- Language -->
     <string name="language_label">Idioma</string>
     <string name="language_system_default">Padrão do Sistema</string>
-    <string name="language_english">Inglês</string>
+    <string name="language_english">English</string>
+    <string name="language_arabic">العربية (Arabic)</string>
+    <string name="language_czech">Čeština (Czech)</string>
+    <string name="language_german">Deutsch (German)</string>
+    <string name="language_spanish">Español (Spanish)</string>
+    <string name="language_spanish_spain">Español (España)</string>
+    <string name="language_hungarian">Magyar (Hungarian)</string>
+    <string name="language_dutch">Nederlands (Dutch)</string>
+    <string name="language_polish">Polski (Polish)</string>
     <string name="language_portuguese">Português (Brasil)</string>
-    <string name="language_german">Alemão</string>
-    <string name="language_russian">Russo</string>
-    <string name="language_arabic">Árabe</string>
-    <string name="language_spanish">Espanhol</string>
+    <string name="language_romanian">Română (Romanian)</string>
+    <string name="language_russian">Русский (Russian)</string>
+    <string name="language_ukrainian">Українська (Ukrainian)</string>
+    <string name="language_chinese">繁體中文 (Taiwan)</string>
 
     <!-- Notifications & Service -->
     <string name="notif_searching">Procurando a multimidia…</string>

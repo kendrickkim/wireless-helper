@@ -42,7 +42,11 @@
 
     <string name="not_set">Не задано</string>
 
-    <string name="logs_label">Логи:</string>
+    <string name="logs_label">Экспорт логов</string>
+    <string name="export_log_description">Сохранить системные логи в файл для отладки</string>
+    <string name="export_log_title">Логи экспортированы</string>
+    <string name="export_log_saved">Логи были сохранены в:\n\n%s</string>
+    <string name="share">Поделиться</string>
     <string name="category_info">ИНФО</string>
     <string name="settings_header">НАСТРОЙКИ</string>
     <string name="version">Версия</string>
@@ -51,13 +55,21 @@
 
     <!-- Language -->
     <string name="language_label">Язык</string>
-    <string name="language_system_default">Системный</string>
+    <string name="language_system_default">Системный по умолчанию</string>
     <string name="language_english">English</string>
-    <string name="language_portuguese">Portuguese (Brazil)</string>
-    <string name="language_german">Deutsch</string>
-    <string name="language_russian">Русский</string>
-    <string name="language_arabic">Арабский</string>
-    <string name="language_spanish">Spanish</string>
+    <string name="language_arabic">العربية (Arabic)</string>
+    <string name="language_czech">Čeština (Czech)</string>
+    <string name="language_german">Deutsch (German)</string>
+    <string name="language_spanish">Español (Spanish)</string>
+    <string name="language_spanish_spain">Español (España)</string>
+    <string name="language_hungarian">Magyar (Hungarian)</string>
+    <string name="language_dutch">Nederlands (Dutch)</string>
+    <string name="language_polish">Polski (Polish)</string>
+    <string name="language_portuguese">Português (Brasil)</string>
+    <string name="language_romanian">Română (Romanian)</string>
+    <string name="language_russian">Русский (Russian)</string>
+    <string name="language_ukrainian">Українська (Ukrainian)</string>
+    <string name="language_chinese">繁體中文 (Taiwan)</string>
 
     <!-- Notifications & Service -->
     <string name="notif_searching">Поиск Headunit…</string>
