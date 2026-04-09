@@ -12,12 +12,10 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.text.InputType
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.Button
-import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -41,6 +39,7 @@ class MainActivity : AppCompatActivity() {
         const val MODE_HOTSPOT_PHONE = 1
         const val MODE_PASSIVE = 2
         const val MODE_WIFI_DIRECT = 3
+        const val MODE_NEARBY = 4
     }
 
     private val requestPermissionLauncher = registerForActivityResult(
@@ -92,7 +91,8 @@ class MainActivity : AppCompatActivity() {
             getString(R.string.mode_nsd),
             getString(R.string.mode_hotspot_phone),
             getString(R.string.mode_passive),
-            getString(R.string.mode_wifi_direct)
+            getString(R.string.mode_wifi_direct),
+            getString(R.string.mode_nearby)
         )
     }
 
@@ -409,6 +409,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateModeSpecificUI(mode: Int) {
         layoutWifiDirectName.visibility = if (mode == MODE_WIFI_DIRECT) View.VISIBLE else View.GONE
+        // For nearby, we might want to hide other things or show a specific hint in the future.
     }
 
     private fun updateAutoStartUI(mode: Int) {
@@ -817,7 +818,25 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
                 "stop" -> if (WirelessHelperService.isRunning) stopLauncherService()
+                "config" -> handleConfigIntent(data)
             }
+        }
+    }
+
+    private fun handleConfigIntent(uri: android.net.Uri) {
+        val ssid = uri.getQueryParameter("ssid")
+        val pass = uri.getQueryParameter("pass")
+
+        if (ssid != null) {
+            val prefs = getSharedPreferences("WirelessHelperPrefs", Context.MODE_PRIVATE)
+            prefs.edit {
+                val ssids = prefs.getStringSet("auto_start_wifi_ssids", mutableSetOf())?.toMutableSet() ?: mutableSetOf()
+                ssids.add(ssid)
+                putStringSet("auto_start_wifi_ssids", ssids)
+                if (pass != null) putString("last_qr_pass", pass)
+            }
+            Toast.makeText(this, "Configured WiFi: $ssid", Toast.LENGTH_LONG).show()
+            restoreState()
         }
     }
 

@@ -15,7 +15,7 @@ android {
         minSdk = 21
         targetSdk = 36
         versionCode = 17
-        versionName = "1.5.2"
+        versionName = "1.6.0-beta1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -65,6 +65,7 @@ dependencies {
     implementation("com.google.android.material:material:1.6.1")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
     implementation("com.linkedin.dexmaker:dexmaker:2.28.6")
+    implementation("com.google.android.gms:play-services-nearby:19.0.0")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

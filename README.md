@@ -48,6 +48,10 @@ adb shell am start -a android.intent.action.VIEW -d "wirelesshelper://stop"
 ```
 
 ## Changelog
+### v.1.6.0-beta1
+- Added Italian 🇮🇹 translation
+- 
+
 ### v.1.5.2
 - Fixed: Don't disable Hotspot if already running. thanks to @dhanar10
 
