@@ -50,7 +50,7 @@ adb shell am start -a android.intent.action.VIEW -d "wirelesshelper://stop"
 ## Changelog
 ### v.1.6.0-beta1
 - Added Italian 🇮🇹 translation
-- Added Google Nearby Feature. This will be added in HURev too, for now it is useless
+- Added Google Nearby Feature. This Feature needed Headunit Revived 2.2.0 or later
 - Added static ip text field for Hotspot on Tablet Mode to set up a static ip
 
 ### v.1.5.2
