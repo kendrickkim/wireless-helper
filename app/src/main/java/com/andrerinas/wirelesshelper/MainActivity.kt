@@ -882,8 +882,15 @@ class MainActivity : AppCompatActivity() {
                 val ssids = prefs.getStringSet("auto_start_wifi_ssids", mutableSetOf())?.toMutableSet() ?: mutableSetOf()
                 ssids.add(ssid)
                 putStringSet("auto_start_wifi_ssids", ssids)
-                if (pass != null) putString("last_qr_pass", pass)
             }
+
+            // Store password in encrypted storage
+            if (pass != null) {
+                com.andrerinas.wirelesshelper.utils.Prefs.getSecure(this).edit {
+                    putString("wifi_pass_$ssid", pass)
+                }
+            }
+
             Toast.makeText(this, "Configured WiFi: $ssid", Toast.LENGTH_LONG).show()
             restoreState()
         }
