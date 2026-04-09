@@ -12,10 +12,12 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.text.InputType
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.Button
+import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -49,6 +51,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var btnToggleService: Button
     private lateinit var layoutConnectionMode: View
     private lateinit var tvConnectionModeValue: TextView
+    private lateinit var layoutStaticIp: View
+    private lateinit var tvStaticIpValue: TextView
     private lateinit var layoutAutoStart: View
     private lateinit var tvAutoStartValue: TextView
     private lateinit var layoutBluetoothDevice: View
@@ -157,6 +161,8 @@ class MainActivity : AppCompatActivity() {
         btnToggleService = findViewById(R.id.btnToggleService)
         layoutConnectionMode = findViewById(R.id.layoutConnectionMode)
         tvConnectionModeValue = findViewById(R.id.tvConnectionModeValue)
+        layoutStaticIp = findViewById(R.id.layoutStaticIp)
+        tvStaticIpValue = findViewById(R.id.tvStaticIpValue)
         layoutAutoStart = findViewById(R.id.layoutAutoStart)
         tvAutoStartValue = findViewById(R.id.tvAutoStartValue)
         layoutBluetoothDevice = findViewById(R.id.layoutBluetoothDevice)
@@ -187,6 +193,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         layoutLanguage.setOnClickListener { showLanguageSelector() }
+
+        layoutStaticIp.setOnClickListener { showStaticIpDialog() }
         
         layoutExportLog.setOnClickListener { exportLogs() }
 
@@ -273,6 +281,45 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun showStaticIpDialog() {
+        val prefs = getSharedPreferences("WirelessHelperPrefs", Context.MODE_PRIVATE)
+        val currentIp = prefs.getString("static_ip_address", "") ?: ""
+
+        val editText = EditText(this).apply {
+            inputType = InputType.TYPE_CLASS_TEXT
+            setText(currentIp)
+            hint = getString(R.string.static_ip_hint)
+        }
+
+        val padding = (16 * resources.displayMetrics.density).toInt()
+        val container = android.widget.FrameLayout(this)
+        container.addView(editText, android.widget.FrameLayout.LayoutParams(android.view.ViewGroup.LayoutParams.MATCH_PARENT, android.view.ViewGroup.LayoutParams.WRAP_CONTENT).apply {
+            setMargins(padding, padding / 2, padding, 0)
+        })
+
+        MaterialAlertDialogBuilder(this, R.style.DarkAlertDialog)
+            .setTitle(R.string.static_ip_dialog_title)
+            .setMessage(R.string.static_ip_desc)
+            .setView(container)
+            .setPositiveButton(android.R.string.ok) { _, _ ->
+                val newIp = editText.text.toString().trim()
+                prefs.edit { putString("static_ip_address", newIp) }
+                updateStaticIpDisplay()
+            }
+            .setNegativeButton(android.R.string.cancel, null)
+            .setNeutralButton(R.string.reset) { _, _ ->
+                prefs.edit { remove("static_ip_address") }
+                updateStaticIpDisplay()
+            }
+            .show()
+    }
+
+    private fun updateStaticIpDisplay() {
+        val prefs = getSharedPreferences("WirelessHelperPrefs", Context.MODE_PRIVATE)
+        val ip = prefs.getString("static_ip_address", "") ?: ""
+        tvStaticIpValue.text = if (ip.isEmpty()) getString(R.string.not_set) else ip
+    }
+
     private fun showBluetoothDeviceSelector() {
         if (Build.VERSION.SDK_INT >= 31 && ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.BLUETOOTH_CONNECT), 101)
@@ -347,6 +394,7 @@ class MainActivity : AppCompatActivity() {
         val connMode = prefs.getInt("connection_mode", 0)
         tvConnectionModeValue.text = connectionModes.getOrElse(connMode) { connectionModes[0] }
         updateModeSpecificUI(connMode)
+        updateStaticIpDisplay()
         val autoMode = prefs.getInt("auto_start_mode", 0)
         updateAutoStartUI(autoMode)
         updateBluetoothValueDisplay()
@@ -408,6 +456,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateModeSpecificUI(mode: Int) {
+        layoutStaticIp.visibility = if (mode == MODE_PASSIVE) View.VISIBLE else View.GONE
         layoutWifiDirectName.visibility = if (mode == MODE_WIFI_DIRECT) View.VISIBLE else View.GONE
         // For nearby, we might want to hide other things or show a specific hint in the future.
     }
