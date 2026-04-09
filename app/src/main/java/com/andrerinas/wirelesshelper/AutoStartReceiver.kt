@@ -43,7 +43,10 @@ class AutoStartReceiver : BroadcastReceiver() {
                 val isFullyConnected = try {
                     val isConnectedMethod = device.javaClass.getMethod("isConnected")
                     isConnectedMethod.invoke(device) as? Boolean ?: true
-                } catch (e: Exception) { true } // Fallback to true if reflection fails
+                } catch (e: Exception) {
+                    Log.w(TAG, "Failed to check isConnected via reflection, falling back to true.", e)
+                    true // Fallback to true if reflection fails
+                }
 
                 if (!isFullyConnected) {
                     Log.w(TAG, "Device ACL is connected but isConnected() is false. Skipping start.")
