@@ -13,6 +13,7 @@ class AapProxy(
     private val remoteIp: String, 
     private val remotePort: Int = 5288, 
     private val network: android.net.Network? = null,
+    private val preConnectedSocket: Socket? = null,
     private val listener: Listener? = null
 ) {
     
@@ -35,7 +36,7 @@ class AapProxy(
         val localPort = serverSocket!!.localPort
         isRunning = true
         
-        Log.i(TAG, "Proxy started on localhost:$localPort, forwarding to $remoteIp:$remotePort")
+        Log.i(TAG, "Proxy started on localhost:$localPort, forwarding to " + if (preConnectedSocket != null) "pre-connected socket" else "$remoteIp:$remotePort")
         
         scope.launch {
             try {
@@ -59,11 +60,17 @@ class AapProxy(
                 activeBridges.incrementAndGet()
                 listener?.onConnected()
 
-                tabletSocket = Socket()
-                network?.bindSocket(tabletSocket)
-                tabletSocket.connect(InetSocketAddress(remoteIp, remotePort), 5000)
+                if (preConnectedSocket != null) {
+                    tabletSocket = preConnectedSocket
+                    Log.i(TAG, "Bridge established: AA <-> Tablet (Pre-connected socket)")
+                } else {
+                    tabletSocket = Socket()
+                    network?.bindSocket(tabletSocket)
+                    tabletSocket.connect(InetSocketAddress(remoteIp, remotePort), 5000)
+                    Log.i(TAG, "Bridge established: AA <-> Tablet ($remoteIp)")
+                }
+                
                 activeTabletSocket = tabletSocket
-                Log.i(TAG, "Bridge established: AA <-> Tablet ($remoteIp)")
 
                 val aaIn = aaSocket.getInputStream()
                 val aaOut = aaSocket.getOutputStream()

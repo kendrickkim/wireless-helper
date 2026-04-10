@@ -54,7 +54,7 @@ abstract class BaseStrategy(protected val context: Context, private val scope: C
         }
     }
 
-    protected fun launchAndroidAuto(hostIp: String, forceFakeNetwork: Boolean = false) {
+    protected fun launchAndroidAuto(hostIp: String, forceFakeNetwork: Boolean = false, preConnectedSocket: java.net.Socket? = null) {
         if (isLaunching.get()) return
         if (!isLaunching.compareAndSet(false, true)) return
         
@@ -67,8 +67,17 @@ abstract class BaseStrategy(protected val context: Context, private val scope: C
             try {
                 val boundWifi = if (!forceFakeNetwork) WifiNetworkBinding.currentNetwork else null
 
+                val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+                
+                val targetNetwork = when {
+                    forceFakeNetwork -> createFakeNetwork(0)
+                    boundWifi != null -> boundWifi
+                    else -> (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) connectivityManager.activeNetwork else null)
+                        ?: createFakeNetwork(0)
+                }
+
                 // 1. Start the Proxy Server with a listener
-                val proxy = AapProxy(hostIp, listener = object : AapProxy.Listener {
+                val proxy = AapProxy(hostIp, network = targetNetwork, preConnectedSocket = preConnectedSocket, listener = object : AapProxy.Listener {
                     override fun onConnected() {
                         Log.i(TAG, "AA is now flowing through proxy")
                         connectionEstablished.set(true)
@@ -82,15 +91,6 @@ abstract class BaseStrategy(protected val context: Context, private val scope: C
                 
                 activeProxy = proxy
                 val localPort = proxy.start()
-
-                val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-                
-                val targetNetwork = when {
-                    forceFakeNetwork -> createFakeNetwork(0)
-                    boundWifi != null -> boundWifi
-                    else -> (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) connectivityManager.activeNetwork else null)
-                        ?: createFakeNetwork(0)
-                }
 
                 val wifiInfo: Parcelable? = try {
                     val clazz = Class.forName("android.net.wifi.WifiInfo")
