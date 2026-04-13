@@ -62,6 +62,7 @@ class StrategyNearby(context: Context, scope: CoroutineScope) : BaseStrategy(con
     private val connectionLifecycleCallback = object : ConnectionLifecycleCallback() {
         override fun onConnectionInitiated(endpointId: String, info: ConnectionInfo) {
             Log.i(TAG, "NearbyStrategy: Connection initiated with $endpointId. Accepting...")
+            stateListener?.onConnecting()
             connectionsClient.acceptConnection(endpointId, payloadCallback)
         }
 
@@ -72,8 +73,8 @@ class StrategyNearby(context: Context, scope: CoroutineScope) : BaseStrategy(con
                     connectionsClient.stopAdvertising()
 
                     scope.launch {
-                        // Small delay to ensure HUR is ready for the stream registration
-                        kotlinx.coroutines.delay(200)
+                        // Small delay to ensure both sides are ready for the stream registration
+                        kotlinx.coroutines.delay(500) 
 
                         val socket = NearbySocket()
                         activeNearbySocket = socket
@@ -107,7 +108,7 @@ class StrategyNearby(context: Context, scope: CoroutineScope) : BaseStrategy(con
         override fun onPayloadReceived(endpointId: String, payload: Payload) {
             Log.i(TAG, "NearbyStrategy: Payload RECEIVED from $endpointId. Type: ${payload.type}")
             if (payload.type == Payload.Type.STREAM) {
-                Log.i(TAG, "NearbyStrategy: Received incoming STREAM from Tablet. Completing tunnel.")
+                Log.i(TAG, "NearbyStrategy: Received incoming STREAM payload. Tunnel is B-DIR now.")
                 activeNearbySocket?.inputStreamWrapper = payload.asStream()?.asInputStream()
             } else if (payload.type == Payload.Type.BYTES) {
                 val msg = String(payload.asBytes() ?: byteArrayOf())

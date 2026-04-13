@@ -19,6 +19,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 abstract class BaseStrategy(protected val context: Context, private val scope: CoroutineScope) : ConnectionStrategy {
 
     interface StateListener {
+        fun onConnecting()
         fun onProxyConnected()
         fun onProxyDisconnected()
         fun onLaunchTimeout()

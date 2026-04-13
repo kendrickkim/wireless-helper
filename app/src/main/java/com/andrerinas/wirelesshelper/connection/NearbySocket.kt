@@ -39,7 +39,7 @@ class NearbySocket : Socket() {
         return object : InputStream() {
             private fun waitForStream(): InputStream {
                 if (inputLatch.count > 0L) {
-                    android.util.Log.d("HUREV_NEARBY", "NearbySocket: Waiting for inputLatch...")
+                    android.util.Log.i("HUREV_NEARBY", "NearbySocket: Blocking read until InputStream is AVAILABLE via Nearby Payload...")
                 }
                 inputLatch.await()
                 return internalInputStream!!

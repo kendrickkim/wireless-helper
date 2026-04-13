@@ -120,6 +120,11 @@ class WirelessHelperService : Service(), BaseStrategy.StateListener {
         currentStrategy?.start()
     }
 
+    override fun onConnecting() {
+        updateNotification(getString(R.string.notif_connecting))
+        updateAllUIs()
+    }
+
     override fun onProxyConnected() {
         isConnected = true
         acquireWakeLock()
