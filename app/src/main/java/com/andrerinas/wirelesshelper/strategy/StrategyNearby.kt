@@ -18,8 +18,9 @@ class StrategyNearby(context: Context, scope: CoroutineScope) : BaseStrategy(con
 
     override val TAG = "HUREV_NEARBY"
     private val connectionsClient = Nearby.getConnectionsClient(context)
-    private val SERVICE_ID = "com.andrerinas.headunitrevived.NEARBY"
+    private val SERVICE_ID = "gb.xxy.hr"
     private var activeNearbySocket: NearbySocket? = null
+    private var activePipes: Array<android.os.ParcelFileDescriptor>? = null
 
     override fun start() {
         Log.i(TAG, "NearbyStrategy: Starting Nearby Connections (Advertiser only)...")
@@ -33,33 +34,64 @@ class StrategyNearby(context: Context, scope: CoroutineScope) : BaseStrategy(con
         cleanup()
     }
 
+    override fun stopForLaunch() {
+        // DO NOT call stop() here as it would disconnect the tunnel we just built!
+        // We only stop advertising to stay clean.
+        Log.d(TAG, "NearbyStrategy: stopForLaunch - keeping endpoints alive for tunnel.")
+        connectionsClient.stopAdvertising()
+    }
+
     private fun startAdvertising() {
         val advertisingOptions = AdvertisingOptions.Builder()
             .setStrategy(Strategy.P2P_POINT_TO_POINT)
             .build()
 
+        val endpointName = android.os.Build.MODEL
+        Log.i(TAG, "NearbyStrategy: Advertising as $endpointName with SERVICE_ID: $SERVICE_ID")
+        
         connectionsClient.startAdvertising(
-            android.os.Build.MODEL, // Use phone model as name
+            endpointName,
             SERVICE_ID,
             connectionLifecycleCallback,
             advertisingOptions
         )
-            .addOnSuccessListener { Log.d("NearbyStrategy", "Advertising started successfully") }
-            .addOnFailureListener { e -> Log.e("NearbyStrategy", "Advertising failed: ${e.message}") }
+            .addOnSuccessListener { Log.d(TAG, "Advertising started successfully") }
+            .addOnFailureListener { e -> Log.e(TAG, "Advertising failed: ${e.message}") }
     }
 
     private val connectionLifecycleCallback = object : ConnectionLifecycleCallback() {
         override fun onConnectionInitiated(endpointId: String, info: ConnectionInfo) {
-            Log.i(TAG, "NearbyStrategy: Connection initiated with $endpointId. Accepting and stopping advertising...")
-            connectionsClient.stopAdvertising() // Stop immediately to free up radio bandwidth
+            Log.i(TAG, "NearbyStrategy: Connection initiated with $endpointId. Accepting...")
             connectionsClient.acceptConnection(endpointId, payloadCallback)
         }
 
         override fun onConnectionResult(endpointId: String, result: ConnectionResolution) {
             when (result.status.statusCode) {
                 ConnectionsStatusCodes.STATUS_OK -> {
-                    Log.i(TAG, "NearbyStrategy: Connected to $endpointId. Waiting for Tablet to initiate stream tunnel...")
-                    // We wait for the Tablet to send its stream first in onPayloadReceived.
+                    Log.i(TAG, "NearbyStrategy: Connected to $endpointId. Stopping advertising and initiating tunnel...")
+                    connectionsClient.stopAdvertising()
+
+                    scope.launch {
+                        // Small delay to ensure HUR is ready for the stream registration
+                        kotlinx.coroutines.delay(200)
+
+                        val socket = NearbySocket()
+                        activeNearbySocket = socket
+
+                        // 1. Create outgoing pipe (Phone -> Tablet) and send it immediately
+                        val pipes = android.os.ParcelFileDescriptor.createPipe()
+                        activePipes = pipes
+                        socket.outputStreamWrapper = android.os.ParcelFileDescriptor.AutoCloseOutputStream(pipes[1])
+                        val phoneToTabletPayload = Payload.fromStream(pipes[0])
+                        
+                        Log.i(TAG, "NearbyStrategy: Sending Phone->Tablet stream payload...")
+                        connectionsClient.sendPayload(endpointId, phoneToTabletPayload)
+                            .addOnSuccessListener { Log.i(TAG, "NearbyStrategy: [OK] Phone->Tablet payload registered.") }
+                            .addOnFailureListener { e -> Log.e(TAG, "NearbyStrategy: [ERROR] Failed to send payload: ${e.message}") }
+
+                        // 2. Launch Android Auto - it will block on socket.read() until the Tablet's stream arrives
+                        launchAndroidAuto("127.0.0.1", preConnectedSocket = socket)
+                    }
                 }
                 ConnectionsStatusCodes.STATUS_CONNECTION_REJECTED -> Log.w(TAG, "NearbyStrategy: Connection rejected by $endpointId")
                 ConnectionsStatusCodes.STATUS_ERROR -> Log.e(TAG, "NearbyStrategy: Connection error with $endpointId")
@@ -75,24 +107,11 @@ class StrategyNearby(context: Context, scope: CoroutineScope) : BaseStrategy(con
         override fun onPayloadReceived(endpointId: String, payload: Payload) {
             Log.i(TAG, "NearbyStrategy: Payload RECEIVED from $endpointId. Type: ${payload.type}")
             if (payload.type == Payload.Type.STREAM) {
-                Log.i(TAG, "NearbyStrategy: Received STREAM payload. Completing bidirectional tunnel.")
-                
-                val socket = NearbySocket()
-                activeNearbySocket = socket
-                
-                // 1. Map incoming stream from Tablet to socket's input
-                socket.inputStreamWrapper = payload.asStream()?.asInputStream()
-                
-                // 2. Create outgoing pipe (Phone -> Tablet) and send it back
-                val pipes = android.os.ParcelFileDescriptor.createPipe()
-                socket.outputStreamWrapper = android.os.ParcelFileDescriptor.AutoCloseOutputStream(pipes[1])
-                val phoneToTabletPayload = Payload.fromStream(android.os.ParcelFileDescriptor.AutoCloseInputStream(pipes[0]))
-                
-                Log.d(TAG, "NearbyStrategy: Sending Phone->Tablet stream payload back...")
-                connectionsClient.sendPayload(endpointId, phoneToTabletPayload)
-                
-                // 3. Launch Android Auto with this tunnel socket
-                launchAndroidAuto("127.0.0.1", preConnectedSocket = socket)
+                Log.i(TAG, "NearbyStrategy: Received incoming STREAM from Tablet. Completing tunnel.")
+                activeNearbySocket?.inputStreamWrapper = payload.asStream()?.asInputStream()
+            } else if (payload.type == Payload.Type.BYTES) {
+                val msg = String(payload.asBytes() ?: byteArrayOf())
+                Log.i(TAG, "NearbyStrategy: Received BYTES payload: $msg")
             }
         }
 

@@ -35,14 +35,18 @@ class NearbySocket : Socket() {
     override fun getInetAddress(): InetAddress = InetAddress.getLoopbackAddress()
 
     override fun getInputStream(): InputStream {
+        android.util.Log.d("HUREV_NEARBY", "NearbySocket: getInputStream() called")
         return object : InputStream() {
             private fun waitForStream(): InputStream {
+                if (inputLatch.count > 0L) {
+                    android.util.Log.d("HUREV_NEARBY", "NearbySocket: Waiting for inputLatch...")
+                }
                 inputLatch.await()
                 return internalInputStream!!
             }
 
             override fun read(): Int = waitForStream().read()
-            override fun read(b: ByteArray): Int = waitForStream().read(b)
+            override fun read(b: ByteArray): Int = read(b, 0, b.size)
             override fun read(b: ByteArray, off: Int, len: Int): Int = waitForStream().read(b, off, len)
             override fun available(): Int = if (inputLatch.count == 0L) internalInputStream!!.available() else 0
             override fun close() = if (inputLatch.count == 0L) internalInputStream!!.close() else Unit
@@ -50,16 +54,28 @@ class NearbySocket : Socket() {
     }
 
     override fun getOutputStream(): OutputStream {
+        android.util.Log.d("HUREV_NEARBY", "NearbySocket: getOutputStream() called")
         return object : OutputStream() {
             private fun waitForStream(): OutputStream {
+                if (outputLatch.count > 0L) {
+                    android.util.Log.d("HUREV_NEARBY", "NearbySocket: Waiting for outputLatch...")
+                }
                 outputLatch.await()
                 return internalOutputStream!!
             }
 
-            override fun write(b: Int) = waitForStream().write(b)
-            override fun write(b: ByteArray) = waitForStream().write(b)
-            override fun write(b: ByteArray, off: Int, len: Int) = waitForStream().write(b, off, len)
-            override fun flush() = if (outputLatch.count == 0L) internalOutputStream!!.flush() else Unit
+            override fun write(b: Int) {
+                waitForStream().write(b)
+            }
+
+            override fun write(b: ByteArray) = write(b, 0, b.size)
+            override fun write(b: ByteArray, off: Int, len: Int) {
+                waitForStream().write(b, off, len)
+                waitForStream().flush()
+            }
+            override fun flush() {
+                if (outputLatch.count == 0L) internalOutputStream!!.flush()
+            }
             override fun close() = if (outputLatch.count == 0L) internalOutputStream!!.close() else Unit
         }
     }
