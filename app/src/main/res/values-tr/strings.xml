@@ -30,7 +30,7 @@
     <string name="bt_disconnect_stop_desc">Aracın Bluetooth bağlantısı kesildiğinde hizmeti otomatik olarak durdurur.</string>
     <string name="no_paired_devices">Eşleşmiş Bluetooth cihazı bulunamadı</string>
     <string name="select_bt_device">Bluetooth Cihazı Seç</string>
-    <string name="auto_start_linked">Otomatik başlatma %s cihazına bağlandı</string>
+    <string name="auto_start_linked">Otomatik başlatma %s cihazı ile ilişkilendirildi</string>
 
     <string name="wifi_ssid_label">Wi-Fi Ağı (SSID)</string>
     <string name="wifi_connected_network">Bağlı Wi-Fi Ağı</string>
