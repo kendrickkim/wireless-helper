@@ -78,7 +78,7 @@
     <string name="language_arabic">العربية (Arapça)</string>
     <string name="language_spanish">Español (İspanyolca)</string>
     <string name="language_italian">Italiano (İtalyanca)</string>
-    <string name="language_turkish">Türkçe (Turkish)</string>
+    <string name="language_turkish">Türkçe</string>
 
     <string name="notif_searching">Multimedya Sistemi aranıyor…</string>
     <string name="notif_connecting">Bulundu…</string>
