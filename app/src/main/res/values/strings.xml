@@ -86,6 +86,8 @@
     <string name="language_arabic">Arabic</string>
     <string name="language_spanish">Spanish</string>
     <string name="language_italian">Italian</string>
+    <string name="language_turkish">Turkish (Türkçe)</string>
+
 
     <!-- Notifications & Service -->
     <string name="notif_searching">Searching for Headunit…</string>
