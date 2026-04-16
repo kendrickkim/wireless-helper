@@ -39,7 +39,7 @@ class StrategyHotspotPhone(context: Context, private val scope: CoroutineScope) 
                     if (remoteIp != null) {
                         Log.i(TAG, "TCP Trigger received from Tablet at $remoteIp")
                         // Use forceFakeNetwork = true to bypass cellular routing in hotspot mode
-                        launchAndroidAuto(remoteIp, forceFakeNetwork = true)
+                        launchAndroidAuto(remoteIp)
                     }
                 }
             } catch (e: Exception) {
