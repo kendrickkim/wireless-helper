@@ -16,6 +16,9 @@ This app acts as a trigger to start Android Auto Wireless on your phone. It auto
 - **Passive Mode:** Waits for a trigger from the Headunit (ideal for Tablet-Hotspot setups).
 - **Zero-Config:** No manual IP entry required.
 
+## Known Issues
+- WiFi-Triggers on Android 10 (Q) and below: Google has disabled the automatic wireless projection startup for Android 10 and below in Android Auto versions 16.4 and higher. While it still work on newer Android versions, it is currently impossible to trigger projection on Android 10 with recent Google app updates.
+
 ## Auto-Start Setup
 To ensure reliable background auto-start (Bluetooth/WiFi) and a stable connection:
 1. **Disable Battery Optimization (CRITICAL):** Go to App Info -> Battery -> select **"Unrestricted"**. Since this app acts as a data proxy for Android Auto, it must not be put to sleep while driving.
@@ -31,12 +34,13 @@ Wireless Helper supports remote control via Android Intents and App Shortcuts.
 - **Stop Search:** `wirelesshelper://stop`
 
 ### Supported Modes
-| Mode ID | Description        |
-| :--- |:-------------------|
-| `nsd` | Shared Wi-Fi       |
-| `phone-hotspot` | Phone Hotspot mode |
+| Mode ID          | Description        |
+|:-----------------|:-------------------|
+| `nsd`            | Shared Wi-Fi       |
+| `phone-hotspot`  | Phone Hotspot mode |
 | `tablet-hotspot` | Tablet Hotspot     |
-| `wifi-direct` | Wi-Fi Direct       |
+| `wifi-direct`    | Wi-Fi Direct       |
+| `nearby`         | Google Nearby      |
 
 ### ADB Examples
 ```bash
