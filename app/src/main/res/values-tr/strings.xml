@@ -10,6 +10,8 @@
     <string name="mode_passive">Tablet Erişim Noktası</string>
     <string name="mode_wifi_direct">Wi-Fi Direct</string>
     <string name="mode_nearby">Google Yakındakiler (Beta)</string>
+    <string name="hotspot_force_stop_title">Hotspot\'u durdurmaya zorla</string>
+    <string name="hotspot_force_stop_desc">Servis durduğunda, bu uygulama tarafından başlatılmamış olsa bile her zaman hotspot\'u devre dışı bırakmaya çalışın.</string>
     <string name="static_ip_label">Statik IP Adresi</string>
     <string name="static_ip_hint">IP Adresi Girin (Örn: 192.168.43.1)</string>
     <string name="static_ip_desc">Eğer ayarlanırsa, uygulama arama yapmak yerine doğrudan bu IP adresine bağlanır.</string>
