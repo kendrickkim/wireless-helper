@@ -128,11 +128,12 @@ class MainActivity : AppCompatActivity() {
             getString(R.string.language_romanian),
             getString(R.string.language_russian),
             getString(R.string.language_ukrainian),
-            getString(R.string.language_chinese)
+            getString(R.string.language_chinese),
+            ">한국어 (Korean)"
         )
     }
 
-    private val languageTags = arrayOf("", "en", "ar", "cs", "de", "es", "es-ES", "hu", "nl", "pl", "pt-BR", "ro", "ru", "tr", "uk", "zh-TW")
+    private val languageTags = arrayOf("", "en", "ar", "cs", "de", "es", "es-ES", "hu", "nl", "pl", "pt-BR", "ro", "ru", "tr", "uk", "zh-TW","ko")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.Theme_WirelessHelper)
