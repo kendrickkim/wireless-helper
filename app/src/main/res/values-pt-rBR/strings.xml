@@ -82,6 +82,8 @@
     <string name="language_arabic">Árabe</string>
     <string name="language_spanish">Espanhol</string>
     <string name="language_italian">Italiano</string>
+    <string name="language_korean">한국어 (Korean)</string>
+    <string name="language_turkish">Turkish (Türkçe)</string>
 
     <!-- Notifications & Service -->
     <string name="notif_searching">Procurando a multimidia…</string>

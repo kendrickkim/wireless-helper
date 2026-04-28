@@ -82,6 +82,8 @@
     <string name="language_arabic">Арабский</string>
     <string name="language_spanish">Español</string>
     <string name="language_italian">Итальянский</string>
+    <string name="language_korean">한국어 (Korean)</string>
+    <string name="language_turkish">Turkish (Türkçe)</string>
 
     <!-- Notifications & Service -->
     <string name="notif_searching">Поиск Headunit…</string>

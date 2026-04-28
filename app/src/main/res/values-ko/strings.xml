@@ -91,7 +91,6 @@
     <string name="language_turkish">터키어 (Türkçe)</string>
     <string name="language_korean">한국어 (Korean)</string>
 
-
     <!-- Notifications & Service -->
     <string name="notif_searching">헤드유닛 검색 중…</string>
     <string name="notif_connecting">검색됨...</string>

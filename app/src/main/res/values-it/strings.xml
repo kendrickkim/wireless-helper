@@ -83,6 +83,8 @@
     <string name="language_arabic">Arabo</string>
     <string name="language_spanish">Spagnolo</string>
     <string name="language_italian">Italiano</string>
+    <string name="language_korean">한국어 (Korean)</string>
+    <string name="language_turkish">Turkish (Türkçe)</string>
 
     <!-- Notifications & Service -->
     <string name="notif_searching">Ricerca Headunit in corso…</string>
