@@ -124,6 +124,6 @@
     <string name="action_turn_on_wifi">Wi-Fi 활성화</string>
 
     <string name="write_settings_title">권한 필요</string>
-    <string name="write_settings_msg">핫스팟를 자동으로 활성화하려면, Wireless Helper는 \'시스템 설정 수정\' 권한이 필요합니다. 다음 화면에서 활성화하세요.</string>
+    <string name="write_settings_msg">핫스팟을 자동으로 활성화하려면, Wireless Helper는 \'시스템 설정 수정\' 권한이 필요합니다. 다음 화면에서 활성화하세요.</string>
     <string name="write_settings_button">권한 부여</string>
 </resources>
