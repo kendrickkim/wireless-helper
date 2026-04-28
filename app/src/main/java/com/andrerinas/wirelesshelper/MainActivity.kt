@@ -333,13 +333,27 @@ class MainActivity : AppCompatActivity() {
         }
         val bluetoothManager = getSystemService(Context.BLUETOOTH_SERVICE) as android.bluetooth.BluetoothManager
         val adapter = bluetoothManager.adapter
+        val prefs = getSharedPreferences("WirelessHelperPrefs", Context.MODE_PRIVATE)
+        val selectedMacs = prefs.getStringSet("auto_start_bt_macs", emptySet())?.toMutableSet() ?: mutableSetOf()
+
+        // If bluetooth is enabled, we can safely purge non-bonded devices that were previously selected
+        if (adapter?.isEnabled == true) {
+            val bondedAddresses = adapter.bondedDevices.map { it.address }.toSet()
+            val initialSize = selectedMacs.size
+            selectedMacs.retainAll { bondedAddresses.contains(it) }
+            
+            if (selectedMacs.size != initialSize) {
+                prefs.edit { putStringSet("auto_start_bt_macs", selectedMacs) }
+            }
+        }
+
         val bondedDevices = adapter.bondedDevices.toList()
         if (bondedDevices.isEmpty()) {
             Toast.makeText(this, getString(R.string.no_paired_devices), Toast.LENGTH_LONG).show()
+            updateBluetoothValueDisplay()
             return
         }
-        val prefs = getSharedPreferences("WirelessHelperPrefs", Context.MODE_PRIVATE)
-        val selectedMacs = prefs.getStringSet("auto_start_bt_macs", emptySet())?.toMutableSet() ?: mutableSetOf()
+        
         val deviceNames = bondedDevices.map { it.name ?: "Unknown Device" }.toTypedArray()
         val checkedItems = bondedDevices.map { selectedMacs.contains(it.address) }.toBooleanArray()
 
@@ -360,16 +374,41 @@ class MainActivity : AppCompatActivity() {
     private fun updateBluetoothValueDisplay() {
         val prefs = getSharedPreferences("WirelessHelperPrefs", Context.MODE_PRIVATE)
         val selectedMacs = prefs.getStringSet("auto_start_bt_macs", emptySet()) ?: emptySet()
-        if (selectedMacs.isEmpty()) {
+        
+        val bluetoothManager = getSystemService(Context.BLUETOOTH_SERVICE) as android.bluetooth.BluetoothManager
+        val adapter = bluetoothManager.adapter
+        
+        val hasBtConnectPermission = if (Build.VERSION.SDK_INT >= 31) {
+            ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED
+        } else true
+
+        // Only count/show devices that are currently bonded (if BT is enabled and we have permission)
+        // This prevents showing "2 devices" when one has been unpaired from system settings.
+        val bondedAddresses = if (adapter?.isEnabled == true && hasBtConnectPermission) {
+            try {
+                adapter.bondedDevices.map { it.address }.toSet()
+            } catch (e: SecurityException) { null }
+        } else null
+        
+        val validSelectedMacs = if (bondedAddresses != null) {
+            selectedMacs.filter { bondedAddresses.contains(it) }
+        } else {
+            selectedMacs.toList()
+        }
+
+        if (validSelectedMacs.isEmpty()) {
             tvBluetoothDeviceValue.text = getString(R.string.not_set)
         } else {
-            tvBluetoothDeviceValue.text = if (selectedMacs.size == 1) {
-                try {
-                    val bm = getSystemService(Context.BLUETOOTH_SERVICE) as android.bluetooth.BluetoothManager
-                    bm.adapter.getRemoteDevice(selectedMacs.first()).name ?: selectedMacs.first()
-                } catch (e: Exception) { selectedMacs.first() }
+            tvBluetoothDeviceValue.text = if (validSelectedMacs.size == 1) {
+                if (hasBtConnectPermission) {
+                    try {
+                        adapter.getRemoteDevice(validSelectedMacs.first()).name ?: validSelectedMacs.first()
+                    } catch (e: Exception) { validSelectedMacs.first() }
+                } else {
+                    validSelectedMacs.first()
+                }
             } else {
-                "${selectedMacs.size} ${getString(R.string.bt_devices_selected)}"
+                "${validSelectedMacs.size} ${getString(R.string.bt_devices_selected)}"
             }
         }
     }

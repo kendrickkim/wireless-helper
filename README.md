@@ -52,6 +52,10 @@ adb shell am start -a android.intent.action.VIEW -d "wirelesshelper://stop"
 ```
 
 ## Changelog
+### 1.6.4
+- Added korean 🇰🇷 translation, thanks to kendrickkim
+- Fixed: Bug in Bluetooth list
+
 ### v1.6.3
 - Added: Click on Notification brings you to the App
 
