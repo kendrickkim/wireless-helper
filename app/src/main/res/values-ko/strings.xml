@@ -32,7 +32,7 @@
     <string name="bt_devices_selected">기기 선택</string>
     <string name="bt_auto_reconnect_title">자동 재연결 시도</string>
     <string name="bt_auto_reconnect_desc">Bluetooth 연결이 끊어지면 세션을 재시작하려고 시도합니다.</string>
-    <string name="bt_disconnect_stop_title">블루트스 연결이 끊어지면 서비스 중지</string>
+    <string name="bt_disconnect_stop_title">블루투스 연결이 끊어지면 서비스 중지</string>
     <string name="bt_disconnect_stop_desc">자동으로 서비스를 중지합니다. 차량의 Bluetooth 연결이 끊어질때도 마찬가지입니다.</string>
     <string name="no_paired_devices">페어링된 블루투스 기기를 찾을 수 없습니다</string>
     <string name="select_bt_device">블루투스 기기 선택</string>
