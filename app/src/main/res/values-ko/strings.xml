@@ -1,7 +1,7 @@
 <resources>
     <!-- App Name & Main Actions -->
     <string name="app_name">Wireless Helper</string>
-    <string name="start_service">안드로이드 시작</string>
+    <string name="start_service">안드로이드 오토 시작</string>
     <string name="stop_service">검색 중지</string>
     <string name="connected">연결됨</string>
 
