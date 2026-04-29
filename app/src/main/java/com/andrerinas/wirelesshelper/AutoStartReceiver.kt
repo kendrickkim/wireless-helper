@@ -34,10 +34,14 @@ class AutoStartReceiver : BroadcastReceiver() {
         val deviceAddress = device?.address ?: return
         val isTarget = targetMacs.contains(deviceAddress) || deviceAddress == legacyTargetMac
 
-        val deviceDisplayName = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            device.alias ?: device.name ?: "Unknown"
-        } else {
-            device.name ?: "Unknown"
+        val deviceDisplayName = try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                device.alias ?: device.name ?: "Unknown"
+            } else {
+                device.name ?: "Unknown"
+            }
+        } catch (e: SecurityException) {
+            deviceAddress
         }
 
         if (action == BluetoothDevice.ACTION_ACL_CONNECTED) {
