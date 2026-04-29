@@ -175,7 +175,7 @@ object WifiNotificationHelper {
 
         // Check if any of the target devices are currently connected
         // We check A2DP and HEADSET profiles as they are typical for cars
-        val a2dp = adapter.getProfileProxy(context, object : android.bluetooth.BluetoothProfile.ServiceListener {
+        adapter.getProfileProxy(context, object : android.bluetooth.BluetoothProfile.ServiceListener {
             override fun onServiceConnected(profile: Int, proxy: android.bluetooth.BluetoothProfile) {
                 val connectedDevices = proxy.connectedDevices
                 val isStillConnected = connectedDevices.any { targetMacs.contains(it.address) }
