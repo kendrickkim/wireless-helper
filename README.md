@@ -52,7 +52,12 @@ adb shell am start -a android.intent.action.VIEW -d "wirelesshelper://stop"
 ```
 
 ## Changelog
-### 1.6.4
+### v1.7.0
+- Enhanced: Bluetooth list now shows warning if BT is turned off
+- Enhanced: If Wifi is off, the helper now waits for Wifi to be turned on
+- Added: Bluetooth Aliases are now shown when set
+
+### v1.6.4
 - Added korean 🇰🇷 translation, thanks to kendrickkim
 - Fixed: Bug in Bluetooth list
 

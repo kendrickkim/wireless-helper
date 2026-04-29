@@ -329,18 +329,39 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showBluetoothDeviceSelector() {
+        val bluetoothManager = getSystemService(Context.BLUETOOTH_SERVICE) as android.bluetooth.BluetoothManager
+        val adapter = bluetoothManager.adapter
+
+        if (adapter == null) {
+            Toast.makeText(this, "Bluetooth not supported on this device", Toast.LENGTH_LONG).show()
+            return
+        }
+
         if (Build.VERSION.SDK_INT >= 31 && ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.BLUETOOTH_CONNECT), 101)
             return
         }
-        val bluetoothManager = getSystemService(Context.BLUETOOTH_SERVICE) as android.bluetooth.BluetoothManager
-        val adapter = bluetoothManager.adapter
+
+        if (!adapter.isEnabled) {
+            Toast.makeText(this, getString(R.string.bt_disabled), Toast.LENGTH_LONG).show()
+            return
+        }
+
         val prefs = getSharedPreferences("WirelessHelperPrefs", Context.MODE_PRIVATE)
         val selectedMacs = prefs.getStringSet("auto_start_bt_macs", emptySet())?.toMutableSet() ?: mutableSetOf()
 
-        // If bluetooth is enabled, we can safely purge non-bonded devices that were previously selected
-        if (adapter?.isEnabled == true) {
-            val bondedAddresses = adapter.bondedDevices.map { it.address }.toSet()
+        // Safely retrieve bonded devices
+        val bondedDevices = try {
+            adapter.bondedDevices?.toList() ?: emptyList()
+        } catch (e: SecurityException) {
+            Log.e("WirelessHelper", "Permission missing for bondedDevices", e)
+            emptyList()
+        }
+
+        // Only purge non-bonded devices if we actually got a list of bonded devices.
+        // This prevents wiping the selection if the BT adapter is busy or returning empty temporarily.
+        if (bondedDevices.isNotEmpty()) {
+            val bondedAddresses = bondedDevices.map { it.address }.toSet()
             val initialSize = selectedMacs.size
             selectedMacs.retainAll { bondedAddresses.contains(it) }
             
@@ -349,14 +370,25 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        val bondedDevices = adapter.bondedDevices.toList()
         if (bondedDevices.isEmpty()) {
             Toast.makeText(this, getString(R.string.no_paired_devices), Toast.LENGTH_LONG).show()
             updateBluetoothValueDisplay()
             return
         }
         
-        val deviceNames = bondedDevices.map { it.name ?: "Unknown Device" }.toTypedArray()
+        val deviceNames = bondedDevices.map { device ->
+            val hardwareName = device.name ?: "Unknown Device"
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                val alias = device.alias
+                if (!alias.isNullOrEmpty() && alias != hardwareName) {
+                    "$alias ($hardwareName)"
+                } else {
+                    alias ?: hardwareName
+                }
+            } else {
+                hardwareName
+            }
+        }.toTypedArray()
         val checkedItems = bondedDevices.map { selectedMacs.contains(it.address) }.toBooleanArray()
 
         MaterialAlertDialogBuilder(this, R.style.DarkAlertDialog)
@@ -404,7 +436,13 @@ class MainActivity : AppCompatActivity() {
             tvBluetoothDeviceValue.text = if (validSelectedMacs.size == 1) {
                 if (hasBtConnectPermission) {
                     try {
-                        adapter.getRemoteDevice(validSelectedMacs.first()).name ?: validSelectedMacs.first()
+                        val device = adapter.getRemoteDevice(validSelectedMacs.first())
+                        val hardwareName = device.name ?: validSelectedMacs.first()
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                            device.alias ?: hardwareName
+                        } else {
+                            hardwareName
+                        }
                     } catch (e: Exception) { validSelectedMacs.first() }
                 } else {
                     validSelectedMacs.first()
